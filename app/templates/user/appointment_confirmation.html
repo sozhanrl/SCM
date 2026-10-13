@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Appointment Confirmed - {{ appointment.appointment_code }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 bg-white text-center">
+                <div class="care-icon-badge mx-auto bg-success-subtle text-success mb-3" style="width: 4.5rem; height: 4.5rem; font-size: 2.2rem;">
+                    <i class="bi bi-check-lg"></i>
+                </div>
+                <h2 class="h3 fw-bold text-dark mb-1">Appointment Successfully Booked!</h2>
+                <p class="text-muted mb-4">Your appointment has been registered in the Elden Care system.</p>
+
+                <!-- Confirmation Receipt Box -->
+                <div class="card border rounded-3 p-4 bg-light text-start mb-4">
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3 flex-wrap gap-2">
+                        <div>
+                            <span class="text-muted small text-uppercase fw-bold">Appointment Reference Code</span>
+                            <h4 class="fw-bold text-teal mb-0" style="color: var(--primary-color);">{{ appointment.appointment_code }}</h4>
+                        </div>
+                        <div>
+                            <span class="badge badge-status {% if appointment.status == 'Pending' %}badge-pending{% elif appointment.status == 'Confirmed' %}badge-confirmed{% endif %} fs-6">
+                                {{ appointment.status }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="small text-muted fw-bold text-uppercase d-block mb-1">Care Service</label>
+                            <span class="fw-semibold text-dark">{{ appointment.service.name }}</span>
+                            <div class="small text-muted">{{ appointment.service.category }}</div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="small text-muted fw-bold text-uppercase d-block mb-1">Scheduled Date &amp; Time</label>
+                            <span class="fw-semibold text-dark">{{ appointment.appointment_date.strftime('%A, %B %d, %Y') }}</span>
+                            <div class="small text-muted">{{ appointment.start_time.strftime('%I:%M %p') }} - {{ appointment.end_time.strftime('%I:%M %p') }}</div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="small text-muted fw-bold text-uppercase d-block mb-1">Assigned Caregiver</label>
+                            <span class="fw-semibold text-dark">{{ appointment.provider.full_name if appointment.provider else 'Coordinating Caregiver' }}</span>
+                            <div class="small text-muted">{{ appointment.provider.role | capitalize if appointment.provider else 'Will be notified' }}</div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="small text-muted fw-bold text-uppercase d-block mb-1">Care Recipient</label>
+                            <span class="fw-semibold text-dark">{{ appointment.client.full_name }}</span>
+                            <div class="small text-muted">ID: {{ appointment.client.user_code }}</div>
+                        </div>
+
+                        {% if appointment.notes %}
+                        <div class="col-12 pt-2 border-top">
+                            <label class="small text-muted fw-bold text-uppercase d-block mb-1">Care Notes</label>
+                            <p class="small text-dark mb-0 bg-white p-2 rounded border">{{ appointment.notes }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <button type="button" class="btn btn-outline-secondary" onclick="window.print();">
+                        <i class="bi bi-printer me-1"></i>Print Confirmation
+                    </button>
+                    <a href="{{ url_for('appointments.my_appointments') }}" class="btn btn-outline-primary fw-bold">
+                        <i class="bi bi-calendar-check me-1"></i>View My Appointments
+                    </a>
+                    <a href="{{ url_for('user.dashboard') }}" class="btn btn-primary fw-bold">
+                        <i class="bi bi-speedometer2 me-1"></i>Return to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

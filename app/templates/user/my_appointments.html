@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}My Active Appointments - Elden Care{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="h3 fw-bold text-dark mb-0">My Scheduled Appointments</h2>
+            <p class="text-muted small mb-0">View upcoming care sessions, caregiver assignments, or request cancellation</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('appointments.book') }}" class="btn btn-primary fw-bold">
+                <i class="bi bi-calendar2-plus me-1"></i>Book New Care
+            </a>
+            <a href="{{ url_for('appointments.history') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-clock-history me-1"></i>View Past History
+            </a>
+        </div>
+    </div>
+
+    {% if appointments %}
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Reference ID</th>
+                            <th>Service</th>
+                            <th>Date &amp; Time</th>
+                            <th>Assigned Caregiver</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in appointments %}
+                            <tr>
+                                <td>
+                                    <span class="fw-bold text-primary">{{ app.appointment_code }}</span>
+                                    <div class="small text-muted">Created {{ app.created_at.strftime('%b %d') }}</div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark">{{ app.service.name }}</div>
+                                    <div class="small text-muted">{{ app.service.category }}</div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">{{ app.appointment_date.strftime('%B %d, %Y') }}</div>
+                                    <div class="small text-muted">{{ app.start_time.strftime('%I:%M %p') }} - {{ app.end_time.strftime('%I:%M %p') }}</div>
+                                </td>
+                                <td>
+                                    {% if app.provider %}
+                                        <div class="d-flex align-items-center gap-2">
+                                            <img src="{{ app.provider.get_avatar_url() }}" alt="{{ app.provider.full_name }}" class="avatar-img" style="width: 28px; height: 28px;">
+                                            <span>{{ app.provider.full_name }}</span>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted small">Auto-matching...</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge badge-status {% if app.status == 'Pending' %}badge-pending{% elif app.status == 'Confirmed' %}badge-confirmed{% endif %}">
+                                        {{ app.status }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('appointments.confirmation', appointment_id=app.id) }}" class="btn btn-sm btn-outline-primary me-1" title="View Confirmation Receipt">
+                                        <i class="bi bi-receipt"></i> Details
+                                    </a>
+                                    {% if app.is_cancellable %}
+                                        <form method="POST" action="{{ url_for('appointments.cancel', appointment_id=app.id) }}" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Are you sure you want to cancel appointment {{ app.appointment_code }}?">
+                                                <i class="bi bi-x-circle"></i> Cancel
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+            <div class="care-icon-badge mx-auto bg-light text-muted mb-3">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+            <h4 class="fw-bold text-dark">No upcoming appointments</h4>
+            <p class="text-muted mb-4">You have no active or pending appointments at this time.</p>
+            <div>
+                <a href="{{ url_for('appointments.book') }}" class="btn btn-primary btn-senior-lg fw-bold">
+                    <i class="bi bi-calendar2-plus me-1"></i>Schedule Care Session
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

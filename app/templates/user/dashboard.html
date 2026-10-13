@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}My Dashboard - Elden Care{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Header Banner -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <img src="{{ user.get_avatar_url() }}" alt="{{ user.full_name }}" class="avatar-lg shadow-sm">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <h2 class="h3 fw-bold mb-0 text-dark">{{ user.full_name }}</h2>
+                        <span class="badge bg-light text-primary border text-uppercase small">{{ user.role }}</span>
+                    </div>
+                    <div class="text-muted small">
+                        <strong>User ID:</strong> <span class="badge bg-secondary-subtle text-dark">{{ user.user_code }}</span> &bull; {{ user.email }}
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{{ url_for('appointments.book') }}" class="btn btn-primary fw-bold">
+                    <i class="bi bi-calendar2-plus me-1"></i>Book New Care
+                </a>
+                <a href="{{ url_for('profile.view_profile') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-person me-1"></i>My Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Upcoming & Active Appointments -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="h5 fw-bold mb-0">Upcoming Appointments</h4>
+                        <p class="text-muted small mb-0">Scheduled and active care sessions</p>
+                    </div>
+                    <a href="{{ url_for('appointments.my_appointments') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+
+                {% if active_appointments %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for app in active_appointments %}
+                            <div class="p-3 rounded-3 border bg-light-subtle d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="fw-bold text-dark fs-6">{{ app.service.name }}</span>
+                                        <span class="badge badge-status {% if app.status == 'Pending' %}badge-pending{% elif app.status == 'Confirmed' %}badge-confirmed{% endif %}">
+                                            {{ app.status }}
+                                        </span>
+                                    </div>
+                                    <div class="small text-muted mb-1">
+                                        <i class="bi bi-calendar-event me-1"></i>{{ app.appointment_date.strftime('%B %d, %Y') }} &bull; 
+                                        <i class="bi bi-clock me-1"></i>{{ app.start_time.strftime('%I:%M %p') }} - {{ app.end_time.strftime('%I:%M %p') }}
+                                    </div>
+                                    <div class="small text-muted">
+                                        <i class="bi bi-person-heart me-1"></i>Caregiver: <span class="fw-semibold text-dark">{{ app.provider.full_name if app.provider else 'To be assigned' }}</span>
+                                    </div>
+                                    {% if app.notes %}
+                                        <div class="small text-muted fst-italic mt-1"><i class="bi bi-chat-left-quote me-1"></i>Notes: "{{ app.notes }}"</div>
+                                    {% endif %}
+                                </div>
+                                <div class="text-md-end flex-shrink-0">
+                                    <div class="small text-muted mb-2">ID: <span class="fw-semibold">{{ app.appointment_code }}</span></div>
+                                    <form method="POST" action="{{ url_for('appointments.cancel', appointment_id=app.id) }}" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Are you sure you want to cancel appointment {{ app.appointment_code }}?">
+                                            <i class="bi bi-x-circle me-1"></i>Cancel
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <div class="care-icon-badge mx-auto bg-light text-muted mb-3">
+                            <i class="bi bi-calendar-x"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark">No upcoming appointments</h5>
+                        <p class="text-muted small mb-3">You don't have any active appointments scheduled at this moment.</p>
+                        <a href="{{ url_for('appointments.book') }}" class="btn btn-primary fw-bold">
+                            <i class="bi bi-calendar2-plus me-1"></i>Book Care Appointment
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Side: Recent History & Recommended Services -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="h6 fw-bold mb-0">Recent Care History</h5>
+                    <a href="{{ url_for('appointments.history') }}" class="small text-decoration-none">Full History</a>
+                </div>
+
+                {% if past_appointments %}
+                    <ul class="list-group list-group-flush small">
+                        {% for app in past_appointments %}
+                            <li class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-semibold text-dark">{{ app.service.name }}</div>
+                                    <div class="text-muted">{{ app.appointment_date.strftime('%b %d, %Y') }}</div>
+                                </div>
+                                <span class="badge badge-status {% if app.status == 'Completed' %}badge-completed{% elif app.status == 'Cancelled' %}badge-cancelled{% endif %}">
+                                    {{ app.status }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="small text-muted mb-0">No past completed sessions yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- Need Immediate Help Box -->
+            <div class="card border-0 rounded-4 p-4 text-white shadow-sm" style="background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%);">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-headset fs-4"></i>
+                    <h5 class="h6 fw-bold mb-0">Care Coordinator On-Call</h5>
+                </div>
+                <p class="small opacity-90 mb-3">Questions about medication adjustments or caregiver scheduling? Call our 24/7 nursing dispatch.</p>
+                <a href="tel:18005553533" class="btn btn-sm btn-light text-primary fw-bold">
+                    <i class="bi bi-telephone-fill me-1"></i>1-800-555-ELDEN
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

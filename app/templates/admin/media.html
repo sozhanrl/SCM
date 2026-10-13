@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}CMS: Media Management - Elden Care Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="h3 fw-bold text-dark mb-0">Media &amp; Images Library</h2>
+            <p class="text-muted small mb-0">Upload and manage healthcare images, banners, and icons for services and pages</p>
+        </div>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+    </div>
+
+    <!-- Upload Card -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+        <h4 class="h5 fw-bold mb-3"><i class="bi bi-cloud-arrow-up text-primary me-2"></i>Upload Media File</h4>
+        <form method="POST" action="{{ url_for('admin.media') }}" enctype="multipart/form-data" class="row g-3 align-items-end">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="col-md-5">
+                <label class="form-label small fw-bold">Select File <span class="text-danger">*</span></label>
+                <input type="file" name="media_file" class="form-control form-control-sm" accept="image/*" required>
+            </div>
+
+            <div class="col-md-5">
+                <label class="form-label small fw-bold">Caption / Alt Description</label>
+                <input type="text" name="caption" class="form-control form-control-sm" placeholder="e.g. Senior companion smiling in park">
+            </div>
+
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold">
+                    <i class="bi bi-upload me-1"></i>Upload
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Media Grid / Cards -->
+    {% if media_items %}
+        <div class="row g-4">
+            {% for m in media_items %}
+                <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="care-card">
+                        <div class="bg-light p-3 text-center border-bottom rounded-top-4" style="height: 160px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            <img src="{{ m.get_url() }}" alt="{{ m.caption or m.original_filename }}" class="img-fluid" style="max-height: 140px; object-fit: contain;">
+                        </div>
+                        <div class="p-3 d-flex flex-column flex-grow-1">
+                            <div class="fw-bold text-dark text-truncate small" title="{{ m.original_filename }}">{{ m.original_filename }}</div>
+                            <div class="text-muted small mb-2">{{ m.file_size_formatted if m.file_size_formatted else (m.file_size // 1024 ~ ' KB') }} &bull; {{ m.mime_type }}</div>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control form-control-sm" value="{{ m.get_url() }}" id="urlInput{{ m.id }}" readonly>
+                                <button class="btn btn-outline-secondary" type="button" onclick="navigator.clipboard.writeText('{{ m.get_url() }}'); alert('Copied image URL to clipboard!');">
+                                    <i class="bi bi-copy"></i>
+                                </button>
+                            </div>
+                            <div class="mt-auto d-flex justify-content-between align-items-center">
+                                <span class="small text-muted">{{ m.created_at.strftime('%b %d, %Y') }}</span>
+                                <form method="POST" action="{{ url_for('admin.delete_media_route', media_id=m.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Delete this media file?">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+            <div class="care-icon-badge mx-auto bg-light text-muted mb-3">
+                <i class="bi bi-images"></i>
+            </div>
+            <h5 class="fw-bold text-dark">No media files uploaded yet</h5>
+            <p class="text-muted small mb-0">Upload photos or diagrams using the form above.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
