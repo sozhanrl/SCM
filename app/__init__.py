@@ -55,9 +55,9 @@ def create_app(config_name: str = None) -> Flask:
     @app.template_filter('currency')
     def currency_filter(val):
         try:
-            return f"${float(val):,.2f}"
+            return f"₹{float(val):,.2f}"
         except (ValueError, TypeError):
-            return "$0.00"
+            return "₹0.00"
 
     # Safe Upload Serving Route
     @app.route('/uploads/<folder>/<filename>')
