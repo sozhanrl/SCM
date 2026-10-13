@@ -130,7 +130,7 @@ def seed_database():
                 'code': 'SVC-001',
                 'name': 'Personal Daily Living Assistance',
                 'category': 'Daily Living Assistance',
-                'price': 35.00,
+                'price': 350.00,
                 'duration': 60,
                 'desc': 'Compassionate assistance with daily personal routines including bathing, dressing, grooming, and mobility support designed for dignity and comfort.'
             },
@@ -138,7 +138,7 @@ def seed_database():
                 'code': 'SVC-002',
                 'name': 'Skilled Nursing & Medication Management',
                 'category': 'Medical Support & Nursing',
-                'price': 65.00,
+                'price': 650.00,
                 'duration': 60,
                 'desc': 'Professional clinical care by licensed nurses. Includes medication administration, vital signs tracking, wound dressing, and physician coordination.'
             },
@@ -146,7 +146,7 @@ def seed_database():
                 'code': 'SVC-003',
                 'name': 'Dementia & Memory Care Therapy',
                 'category': 'Dementia & Memory Care',
-                'price': 48.00,
+                'price': 480.00,
                 'duration': 60,
                 'desc': 'Specialized support for seniors living with Alzheimer’s or dementia. Cognitive stimulation games, gentle memory therapy, and safety oversight.'
             },
@@ -154,7 +154,7 @@ def seed_database():
                 'code': 'SVC-004',
                 'name': 'Physical Rehabilitation & Mobility Exercises',
                 'category': 'Physical Therapy & Rehab',
-                'price': 55.00,
+                'price': 550.00,
                 'duration': 60,
                 'desc': 'Tailored light exercises and physical therapy sessions to restore balance, enhance flexibility, and prevent fall injuries.'
             },
@@ -162,7 +162,7 @@ def seed_database():
                 'code': 'SVC-005',
                 'name': 'Companionship & Social Engagement',
                 'category': 'Companionship & Social',
-                'price': 28.00,
+                'price': 280.00,
                 'duration': 60,
                 'desc': 'Friendly companion visits featuring active conversation, reading, board games, guided garden walks, and community connection.'
             },
@@ -170,7 +170,7 @@ def seed_database():
                 'code': 'SVC-006',
                 'name': 'Nutritious Meal Prep & Dietary Management',
                 'category': 'Nutrition & Meal Prep',
-                'price': 32.00,
+                'price': 320.00,
                 'duration': 60,
                 'desc': 'Home-cooked healthy meals tailored to senior dietary requirements, diabetic menus, low-sodium regimens, and hydration tracking.'
             },
@@ -178,7 +178,7 @@ def seed_database():
                 'code': 'SVC-007',
                 'name': 'Overnight Monitoring & Respite Care',
                 'category': 'Overnight & Respite Care',
-                'price': 85.00,
+                'price': 850.00,
                 'duration': 120,
                 'desc': 'Attentive overnight presence providing peace of mind, nighttime transfers, medication reminders, and respite for family caregivers.'
             }
