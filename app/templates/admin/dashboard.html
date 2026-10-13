@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}Administrator Dashboard - Elden Care{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="h3 fw-bold text-dark mb-0">Administrator Overview</h2>
+            <p class="text-muted small mb-0">System metrics, real-time appointments, and security activity</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{{ url_for('admin.add_service') }}" class="btn btn-sm btn-primary fw-bold">
+                <i class="bi bi-plus-circle me-1"></i>Add Service
+            </a>
+            <a href="{{ url_for('admin.add_page') }}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-file-earmark-plus me-1"></i>New Page
+            </a>
+            <a href="{{ url_for('admin.media') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-upload me-1"></i>Upload Media
+            </a>
+        </div>
+    </div>
+
+    <!-- 6 Primary Metrics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="stat-card">
+                <div class="stat-icon bg-light text-primary mb-2" style="background-color: var(--primary-light) !important; color: var(--primary-color) !important;">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="stat-number">{{ total_users }}</div>
+                <div class="text-muted small fw-semibold">Clients</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="stat-card">
+                <div class="stat-icon bg-light text-info mb-2">
+                    <i class="bi bi-person-heart"></i>
+                </div>
+                <div class="stat-number">{{ total_caregivers }}</div>
+                <div class="text-muted small fw-semibold">Caregivers</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="stat-card">
+                <div class="stat-icon bg-light text-success mb-2">
+                    <i class="bi bi-heart-pulse-fill"></i>
+                </div>
+                <div class="stat-number">{{ total_services }}</div>
+                <div class="text-muted small fw-semibold">Services</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="stat-card">
+                <div class="stat-icon bg-light text-secondary mb-2">
+                    <i class="bi bi-calendar-event"></i>
+                </div>
+                <div class="stat-number">{{ total_appointments }}</div>
+                <div class="text-muted small fw-semibold">Bookings</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="stat-card">
+                <div class="stat-icon bg-light text-warning mb-2">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="stat-number">{{ pending_appointments }}</div>
+                <div class="text-muted small fw-semibold">Pending</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="stat-card">
+                <div class="stat-icon bg-light text-success mb-2">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="stat-number">{{ completed_appointments }}</div>
+                <div class="text-muted small fw-semibold">Completed</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Navigation Pills -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ url_for('admin.users') }}" class="btn btn-outline-primary btn-sm fw-bold">
+                <i class="bi bi-people me-1"></i>Manage Users
+            </a>
+            <a href="{{ url_for('admin.services') }}" class="btn btn-outline-primary btn-sm fw-bold">
+                <i class="bi bi-gear me-1"></i>Manage Services
+            </a>
+            <a href="{{ url_for('admin.appointments') }}" class="btn btn-outline-primary btn-sm fw-bold">
+                <i class="bi bi-calendar-check me-1"></i>Manage Appointments
+            </a>
+            <a href="{{ url_for('admin.pages') }}" class="btn btn-outline-primary btn-sm fw-bold">
+                <i class="bi bi-file-earmark-richtext me-1"></i>CMS Pages
+            </a>
+            <a href="{{ url_for('admin.media') }}" class="btn btn-outline-primary btn-sm fw-bold">
+                <i class="bi bi-images me-1"></i>CMS Media
+            </a>
+            <a href="{{ url_for('admin.activity_logs') }}" class="btn btn-outline-secondary btn-sm fw-bold ms-auto">
+                <i class="bi bi-journal-text me-1"></i>Audit Logs
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Appointments & Activity Grid -->
+    <div class="row g-4">
+        <!-- Recent Appointments Table -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">Recent Bookings</h5>
+                    <a href="{{ url_for('admin.appointments') }}" class="small text-decoration-none">View All</a>
+                </div>
+
+                {% if recent_appointments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Ref</th>
+                                    <th>Client</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in recent_appointments %}
+                                    <tr>
+                                        <td class="fw-bold">{{ app.appointment_code }}</td>
+                                        <td>{{ app.client.full_name }}</td>
+                                        <td>{{ app.service.name }}</td>
+                                        <td>{{ app.appointment_date.strftime('%b %d') }}</td>
+                                        <td>
+                                            <span class="badge badge-status {% if app.status == 'Pending' %}badge-pending{% elif app.status == 'Confirmed' %}badge-confirmed{% elif app.status == 'Completed' %}badge-completed{% else %}badge-cancelled{% endif %}">
+                                                {{ app.status }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted small mb-0">No bookings created yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Audit Log -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">System Activity Audit</h5>
+                    <a href="{{ url_for('admin.activity_logs') }}" class="small text-decoration-none">Full Log</a>
+                </div>
+
+                {% if recent_activity %}
+                    <ul class="list-group list-group-flush small">
+                        {% for log in recent_activity %}
+                            <li class="list-group-item px-0 py-2">
+                                <div class="d-flex justify-content-between">
+                                    <strong class="text-dark">{{ log.action }}</strong>
+                                    <span class="text-muted">{{ log.created_at.strftime('%H:%M:%S') }}</span>
+                                </div>
+                                <div class="text-muted">{{ log.details or '-' }}</div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted small mb-0">No activity logged.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

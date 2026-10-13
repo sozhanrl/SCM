@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Elden Care{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white mb-4">
+                <div class="d-flex flex-column flex-md-row align-items-center gap-4 border-bottom pb-4 mb-4 text-center text-md-start">
+                    <div class="position-relative">
+                        <img src="{{ user.get_avatar_url() }}" alt="{{ user.full_name }}" id="profile-preview-avatar" class="avatar-lg shadow-sm">
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2 justify-content-center justify-content-md-start mb-1">
+                            <h2 class="h3 fw-bold text-dark mb-0">{{ user.full_name }}</h2>
+                            <span class="badge bg-primary text-white text-uppercase small">{{ user.role }}</span>
+                        </div>
+                        <p class="text-muted small mb-2">Member since {{ user.created_at.strftime('%B %Y') }}</p>
+                        <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-start">
+                            <span class="badge bg-light text-dark border">
+                                <i class="bi bi-person-badge me-1"></i>User ID: <strong>{{ user.user_code }}</strong>
+                            </span>
+                            <span class="badge bg-light text-dark border">
+                                <i class="bi bi-check-circle-fill text-success me-1"></i>Active Account
+                            </span>
+                        </div>
+                    </div>
+                    <div class="ms-md-auto">
+                        <a href="{{ url_for('profile.edit_profile') }}" class="btn btn-outline-primary fw-bold">
+                            <i class="bi bi-pencil-square me-1"></i>Edit Profile Details
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Profile Details Table / Grid -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-3 bg-light">
+                            <label class="text-muted small fw-bold text-uppercase d-block mb-1">Email Address</label>
+                            <span class="text-dark fw-semibold fs-6">{{ user.email }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-3 bg-light">
+                            <label class="text-muted small fw-bold text-uppercase d-block mb-1">Phone Number</label>
+                            <span class="text-dark fw-semibold fs-6">{{ user.phone or 'Not provided' }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="p-3 rounded-3 bg-light">
+                            <label class="text-muted small fw-bold text-uppercase d-block mb-1">Residential Address</label>
+                            <span class="text-dark fw-semibold fs-6">{{ user.address or 'No address on file' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Image Upload Form -->
+                <div class="card border rounded-3 p-3 bg-light-subtle mb-4">
+                    <h5 class="h6 fw-bold mb-2"><i class="bi bi-camera-fill text-primary me-2"></i>Update Profile Avatar</h5>
+                    <p class="small text-muted mb-3">Upload a clean photograph (.jpg, .jpeg, .png, .webp). Max size 5 MB.</p>
+
+                    <form method="POST" action="{{ url_for('profile.upload_image') }}" enctype="multipart/form-data" class="d-flex flex-column flex-sm-row gap-2 align-items-sm-center">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="file" name="profile_image" class="form-control form-control-sm" accept="image/*" data-preview-target="profile-preview-avatar" required>
+                        <button type="submit" class="btn btn-sm btn-primary fw-bold flex-shrink-0">
+                            <i class="bi bi-upload me-1"></i>Upload Photo
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Account Security Actions -->
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                    <div>
+                        <h6 class="fw-bold mb-0">Account Security</h6>
+                        <small class="text-muted">Password last updated securely</small>
+                    </div>
+                    <a href="{{ url_for('auth.change_pwd') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-shield-lock me-1"></i>Change Password
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

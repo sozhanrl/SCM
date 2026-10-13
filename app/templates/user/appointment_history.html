@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking History - Elden Care{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="h3 fw-bold text-dark mb-0">Complete Booking History</h2>
+            <p class="text-muted small mb-0">Audit of all past, completed, and cancelled care bookings</p>
+        </div>
+        <a href="{{ url_for('appointments.book') }}" class="btn btn-primary fw-bold">
+            <i class="bi bi-calendar2-plus me-1"></i>Book New Care
+        </a>
+    </div>
+
+    {% if appointments %}
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Reference ID</th>
+                            <th>Service</th>
+                            <th>Date &amp; Time</th>
+                            <th>Caregiver</th>
+                            <th>Status</th>
+                            <th>Notes / Reason</th>
+                            <th class="text-end">Receipt</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in appointments %}
+                            <tr>
+                                <td>
+                                    <span class="fw-bold text-dark">{{ app.appointment_code }}</span>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">{{ app.service.name }}</div>
+                                </td>
+                                <td>
+                                    <div>{{ app.appointment_date.strftime('%B %d, %Y') }}</div>
+                                    <div class="small text-muted">{{ app.start_time.strftime('%I:%M %p') }} - {{ app.end_time.strftime('%I:%M %p') }}</div>
+                                </td>
+                                <td>
+                                    {{ app.provider.full_name if app.provider else 'Unassigned' }}
+                                </td>
+                                <td>
+                                    <span class="badge badge-status 
+                                        {% if app.status == 'Completed' %}badge-completed
+                                        {% elif app.status == 'Confirmed' %}badge-confirmed
+                                        {% elif app.status == 'Pending' %}badge-pending
+                                        {% else %}badge-cancelled{% endif %}">
+                                        {{ app.status }}
+                                    </span>
+                                </td>
+                                <td class="small text-muted">
+                                    {{ app.cancellation_reason or app.notes or '-' }}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('appointments.confirmation', appointment_id=app.id) }}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-receipt"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+            <h5 class="fw-bold text-muted">No appointments found in history.</h5>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

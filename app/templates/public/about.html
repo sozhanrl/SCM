@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - Elden Care Elder Care Management{% endblock %}
+
+{% block content %}
+<div class="bg-light py-5 border-bottom">
+    <div class="container text-center">
+        <span class="text-primary fw-bold text-uppercase small">Our Mission &amp; Heritage</span>
+        <h1 class="display-5 fw-bold text-dark mt-1">Dedicated to Dignity, Independence &amp; Compassion</h1>
+        <p class="lead text-muted max-w-700 mx-auto">
+            Since our founding, Elden Care has been pioneering human-centered, certified care for aging seniors and peace of mind for families.
+        </p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row align-items-center g-5 mb-5">
+        <div class="col-lg-6">
+            <h2 class="fw-bold mb-3">Compassionate Care Built On Clinical Excellence</h2>
+            <p class="fs-5 text-muted">
+                At Elden Care, we treat every individual as family. Aging gracefully at home shouldn't mean sacrificing medical oversight or social joy.
+            </p>
+            <p class="text-muted">
+                Our team blends licensed nurses (RNs, LPNs), certified nursing assistants (CNAs), and compassionate personal care attendants. We continuously train our staff in dementia empathy, fall prevention strategies, and senior dietary wellness.
+            </p>
+            <div class="row g-3 mt-2">
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-shield-fill-check text-primary fs-3"></i>
+                        <div>
+                            <div class="fw-bold">100% Vetted</div>
+                            <small class="text-muted">Rigorous background checks</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-heart-pulse-fill text-danger fs-3"></i>
+                        <div>
+                            <div class="fw-bold">Clinical Standards</div>
+                            <small class="text-muted">Nurse-supervised plans</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4 p-4 bg-white">
+                <h4 class="fw-bold mb-3 text-teal" style="color: var(--primary-color);">Our Core Values</h4>
+                <div class="d-flex gap-3 mb-3">
+                    <div class="care-icon-badge m-0 flex-shrink-0" style="width: 2.75rem; height: 2.75rem; font-size: 1.25rem;">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div>
+                        <h5 class="h6 fw-bold mb-1">Human Dignity</h5>
+                        <p class="small text-muted mb-0">Empowering seniors to maintain their personal choices, privacy, and independence.</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-3 mb-3">
+                    <div class="care-icon-badge m-0 flex-shrink-0" style="width: 2.75rem; height: 2.75rem; font-size: 1.25rem;">
+                        <i class="bi bi-eye-fill"></i>
+                    </div>
+                    <div>
+                        <h5 class="h6 fw-bold mb-1">Family Transparency</h5>
+                        <p class="small text-muted mb-0">Live status tracking, appointment records, and direct caregiver communication.</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-3">
+                    <div class="care-icon-badge m-0 flex-shrink-0" style="width: 2.75rem; height: 2.75rem; font-size: 1.25rem;">
+                        <i class="bi bi-award-fill"></i>
+                    </div>
+                    <div>
+                        <h5 class="h6 fw-bold mb-1">Clinical Integrity</h5>
+                        <p class="small text-muted mb-0">Evidence-based medication tracking and rehabilitation exercises.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Caregivers Showcase -->
+    {% if caregivers %}
+    <div class="mt-5 pt-4 border-top">
+        <div class="text-center mb-5">
+            <span class="text-primary fw-bold text-uppercase small">Our Compassionate Team</span>
+            <h3 class="fw-bold">Meet Some of Our Certified Caregivers</h3>
+        </div>
+        <div class="row g-4 justify-content-center">
+            {% for cg in caregivers %}
+            <div class="col-md-6 col-lg-3">
+                <div class="care-card text-center p-4">
+                    <img src="{{ cg.get_avatar_url() }}" alt="{{ cg.full_name }}" class="avatar-lg mx-auto mb-3 shadow-sm">
+                    <h5 class="fw-bold mb-1">{{ cg.full_name }}</h5>
+                    <span class="badge bg-light text-primary border mb-2 text-uppercase small">{{ cg.role }}</span>
+                    <p class="small text-muted mb-0">Dedicated to delivering thoughtful, licensed care tailored to unique senior requirements.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Care Coordinators - Elden Care{% endblock %}
+
+{% block content %}
+<div class="bg-light py-5 border-bottom">
+    <div class="container text-center">
+        <span class="text-primary fw-bold text-uppercase small">24/7 Family Assistance</span>
+        <h1 class="display-5 fw-bold text-dark mt-1">Connect with Our Care Specialists</h1>
+        <p class="lead text-muted max-w-700 mx-auto">
+            Whether inquiring for a loved one, requesting care consultation, or needing urgent support, we are here.
+        </p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-5">
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm p-4 bg-white rounded-4 h-100">
+                <h4 class="fw-bold mb-4">Contact Information</h4>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="care-icon-badge m-0 flex-shrink-0">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Central Care Center</h6>
+                        <p class="text-muted small mb-0">100 Elden Healthcare Blvd, Suite 400<br>Boston, MA 02116</p>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="care-icon-badge m-0 flex-shrink-0">
+                        <i class="bi bi-telephone-inbound-fill"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Toll-Free Phone</h6>
+                        <p class="text-muted small mb-0">
+                            <strong>Care Hotline:</strong> 1-800-555-ELDEN (3533)<br>
+                            <strong>Direct Office:</strong> +1 (555) 019-2834
+                        </p>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="care-icon-badge m-0 flex-shrink-0">
+                        <i class="bi bi-envelope-check-fill"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Email Inquiries</h6>
+                        <p class="text-muted small mb-0">
+                            support@eldencare.com<br>advisors@eldencare.com
+                        </p>
+                    </div>
+                </div>
+
+                <div class="p-3 rounded-3 bg-light border mt-auto">
+                    <h6 class="fw-bold text-primary mb-1"><i class="bi bi-clock-history me-1"></i>Hours of Operation</h6>
+                    <p class="small text-muted mb-0">Care coordination office open 8:00 AM - 8:00 PM EST daily. Emergency on-call registered nursing staff available 24/7/365.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm p-4 p-md-5 bg-white rounded-4">
+                <h4 class="fw-bold mb-3">Send a Message</h4>
+                <p class="text-muted small mb-4">Fill out the form below and one of our dedicated elder care coordinators will reach out within 2 hours.</p>
+
+                <form method="POST" action="{{ url_for('public.contact') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Your Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" required placeholder="e.g. John Doe">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="form-control" required placeholder="name@example.com">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Subject</label>
+                            <input type="text" name="subject" class="form-control" placeholder="e.g. Care inquiry for my mother">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Message &amp; Care Details <span class="text-danger">*</span></label>
+                            <textarea name="message" rows="5" class="form-control" required placeholder="Please describe any specific care requirements or preferred timing..."></textarea>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-primary btn-senior-lg w-100 fw-bold">
+                                <i class="bi bi-send-fill me-2"></i>Submit Message
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

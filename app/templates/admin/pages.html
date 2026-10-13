@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}CMS: Manage Pages - Elden Care Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="h3 fw-bold text-dark mb-0">Website Pages (CMS)</h2>
+            <p class="text-muted small mb-0">Create, customize, and publish content pages across the Elden Care portal</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('admin.add_page') }}" class="btn btn-primary fw-bold">
+                <i class="bi bi-file-earmark-plus me-1"></i>Create New Page
+            </a>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Back
+            </a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Page Title</th>
+                        <th>URL Slug</th>
+                        <th>Status</th>
+                        <th>Author</th>
+                        <th>Last Updated</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in pages %}
+                        <tr>
+                            <td>
+                                <strong class="text-dark">{{ p.title }}</strong>
+                            </td>
+                            <td>
+                                <code>/pages/{{ p.slug }}</code>
+                            </td>
+                            <td>
+                                {% if p.status == 'published' %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">Published</span>
+                                {% else %}
+                                    <span class="badge bg-secondary-subtle text-muted border">Draft</span>
+                                {% endif %}
+                            </td>
+                            <td class="small">{{ p.author.full_name if p.author else 'System' }}</td>
+                            <td class="small text-muted">{{ p.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td class="text-end">
+                                <a href="{{ url_for('public.cms_page', slug=p.slug) }}" class="btn btn-sm btn-outline-secondary me-1" target="_blank" title="View Public Page">
+                                    <i class="bi bi-box-arrow-up-right"></i>
+                                </a>
+                                <a href="{{ url_for('admin.edit_page_route', page_id=p.id) }}" class="btn btn-sm btn-outline-primary me-1" title="Edit Page Content">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                                {% if p.slug not in ['home', 'about', 'services', 'contact'] %}
+                                    <form method="POST" action="{{ url_for('admin.delete_page_route', page_id=p.id) }}" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Are you sure you want to permanently delete page '{{ p.title }}'?">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

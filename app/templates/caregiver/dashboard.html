@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Caregiver Portal - Elden Care{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Caregiver Header Banner -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <img src="{{ user.get_avatar_url() }}" alt="{{ user.full_name }}" class="avatar-lg shadow-sm">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <h2 class="h3 fw-bold mb-0 text-dark">{{ user.full_name }}</h2>
+                        <span class="badge bg-primary text-white text-uppercase small">Certified Caregiver</span>
+                    </div>
+                    <div class="text-muted small">
+                        <strong>Provider ID:</strong> <span class="badge bg-secondary-subtle text-dark">{{ user.user_code }}</span> &bull; {{ user.email }}
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-3 text-center">
+                <div class="p-2 px-3 rounded-3 bg-light border">
+                    <div class="h4 fw-bold text-teal mb-0" style="color: var(--primary-color);">{{ today_appointments | length }}</div>
+                    <div class="small text-muted">Today's Visits</div>
+                </div>
+                <div class="p-2 px-3 rounded-3 bg-light border">
+                    <div class="h4 fw-bold text-success mb-0">{{ completed_count }}</div>
+                    <div class="small text-muted">Completed Total</div>
+                </div>
+                <div class="p-2 px-3 rounded-3 bg-light border">
+                    <div class="h4 fw-bold text-warning mb-0">{{ pending_count }}</div>
+                    <div class="small text-muted">Pending Action</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Assigned Visits -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+        <h4 class="h5 fw-bold mb-3"><i class="bi bi-clock-history text-primary me-2"></i>Today's Care Schedule</h4>
+        {% if today_appointments %}
+            <div class="d-flex flex-column gap-3">
+                {% for app in today_appointments %}
+                    <div class="p-3 rounded-3 border bg-light-subtle d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="fw-bold fs-6">{{ app.service.name }}</span>
+                                <span class="badge badge-status {% if app.status == 'Pending' %}badge-pending{% elif app.status == 'Confirmed' %}badge-confirmed{% elif app.status == 'Completed' %}badge-completed{% else %}badge-cancelled{% endif %}">
+                                    {{ app.status }}
+                                </span>
+                            </div>
+                            <div class="small text-muted mb-1">
+                                <i class="bi bi-person me-1"></i>Client: <strong class="text-dark">{{ app.client.full_name }}</strong> ({{ app.client.phone or 'No phone' }})
+                            </div>
+                            <div class="small text-muted mb-1">
+                                <i class="bi bi-geo-alt me-1"></i>Address: {{ app.client.address or 'Address on file' }}
+                            </div>
+                            <div class="small text-muted">
+                                <i class="bi bi-clock me-1"></i>Time: <strong>{{ app.start_time.strftime('%I:%M %p') }} - {{ app.end_time.strftime('%I:%M %p') }}</strong>
+                            </div>
+                            {% if app.notes %}
+                                <div class="small text-muted fst-italic mt-1"><i class="bi bi-chat-left-dots me-1"></i>Care Instructions: "{{ app.notes }}"</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Update Status Form -->
+                        <div class="flex-shrink-0">
+                            <form method="POST" action="{{ url_for('caregiver.update_status', appointment_id=app.id) }}" class="d-flex flex-wrap gap-2 align-items-center">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <select name="status" class="form-select form-select-sm" style="width: auto;">
+                                    <option value="Confirmed" {% if app.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                    <option value="Completed" {% if app.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                    <option value="Cancelled" {% if app.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary fw-bold">Update</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">No visits scheduled for today.</p>
+        {% endif %}
+    </div>
+
+    <!-- Upcoming Visits -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <h4 class="h5 fw-bold mb-3"><i class="bi bi-calendar-event text-secondary me-2"></i>Upcoming Assigned Visits</h4>
+        {% if upcoming_appointments %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ref Code</th>
+                            <th>Date &amp; Time</th>
+                            <th>Care Recipient</th>
+                            <th>Service</th>
+                            <th>Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in upcoming_appointments %}
+                            <tr>
+                                <td class="fw-bold">{{ app.appointment_code }}</td>
+                                <td>
+                                    <div>{{ app.appointment_date.strftime('%B %d, %Y') }}</div>
+                                    <small class="text-muted">{{ app.start_time.strftime('%I:%M %p') }}</small>
+                                </td>
+                                <td>
+                                    <strong>{{ app.client.full_name }}</strong>
+                                    <div class="small text-muted">{{ app.client.phone or 'No phone' }}</div>
+                                </td>
+                                <td>{{ app.service.name }}</td>
+                                <td>
+                                    <span class="badge badge-status {% if app.status == 'Pending' %}badge-pending{% elif app.status == 'Confirmed' %}badge-confirmed{% else %}badge-completed{% endif %}">
+                                        {{ app.status }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <form method="POST" action="{{ url_for('caregiver.update_status', appointment_id=app.id) }}" class="d-inline-flex gap-1">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <select name="status" class="form-select form-select-sm" style="width: auto;">
+                                            <option value="Confirmed" {% if app.status == 'Confirmed' %}selected{% endif %}>Confirm</option>
+                                            <option value="Completed">Complete</option>
+                                            <option value="Cancelled">Cancel</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">No upcoming visits assigned.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

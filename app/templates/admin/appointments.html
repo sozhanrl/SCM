@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Appointments - Elden Care Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="h3 fw-bold text-dark mb-0">Care Appointments Management</h2>
+            <p class="text-muted small mb-0">Oversee all elder care schedules, reassign caregivers, and update statuses</p>
+        </div>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card border-0 shadow-sm p-3 mb-4 bg-white rounded-3">
+        <form method="GET" action="{{ url_for('admin.appointments') }}" class="row g-2 align-items-center">
+            <div class="col-md-7">
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by appointment ID, client name, or email..." value="{{ search or '' }}">
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select form-select-sm">
+                    <option value="all">All Statuses</option>
+                    <option value="Pending" {% if status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Confirmed" {% if status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="Completed" {% if status == 'Completed' %}selected{% endif %}>Completed</option>
+                    <option value="Cancelled" {% if status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-1">
+                <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold">Filter</button>
+                {% if search or (status and status != 'all') %}
+                    <a href="{{ url_for('admin.appointments') }}" class="btn btn-outline-secondary btn-sm">Reset</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Appointments Table -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ref Code</th>
+                        <th>Client / Care Recipient</th>
+                        <th>Service</th>
+                        <th>Date &amp; Time</th>
+                        <th>Assigned Caregiver</th>
+                        <th>Status</th>
+                        <th class="text-end">Manage Status &amp; Staff</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in appointments %}
+                        <tr>
+                            <td>
+                                <span class="badge bg-light text-dark border fw-bold">{{ app.appointment_code }}</span>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark">{{ app.client.full_name }}</div>
+                                <div class="small text-muted">{{ app.client.email }} &bull; {{ app.client.phone or 'No phone' }}</div>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">{{ app.service.name }}</div>
+                                <div class="small text-muted">{{ app.service.price | currency }}/hr</div>
+                            </td>
+                            <td>
+                                <div>{{ app.appointment_date.strftime('%b %d, %Y') }}</div>
+                                <div class="small text-muted">{{ app.start_time.strftime('%I:%M %p') }} - {{ app.end_time.strftime('%I:%M %p') }}</div>
+                            </td>
+                            <td>
+                                {{ app.provider.full_name if app.provider else '<span class="text-muted small">Unassigned</span>' | safe }}
+                            </td>
+                            <td>
+                                <span class="badge badge-status 
+                                    {% if app.status == 'Completed' %}badge-completed
+                                    {% elif app.status == 'Confirmed' %}badge-confirmed
+                                    {% elif app.status == 'Pending' %}badge-pending
+                                    {% else %}badge-cancelled{% endif %}">
+                                    {{ app.status }}
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <!-- Status & Reassign Modal Trigger or Inline Form -->
+                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ app.id }}">
+                                    <i class="bi bi-pencil-square me-1"></i>Manage
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade text-start" id="editModal{{ app.id }}" tabindex="-1" aria-labelledby="modalLabel{{ app.id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form method="POST" action="{{ url_for('admin.update_appointment_status_route', appointment_id=app.id) }}">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title fw-bold" id="modalLabel{{ app.id }}">Update Appointment {{ app.appointment_code }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Appointment Status</label>
+                                                        <select name="status" class="form-select">
+                                                            <option value="Pending" {% if app.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                                            <option value="Confirmed" {% if app.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                                            <option value="Completed" {% if app.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                                            <option value="Cancelled" {% if app.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Assign Caregiver</label>
+                                                        <select name="provider_id" class="form-select">
+                                                            <option value="0">-- Unassigned --</option>
+                                                            {% for cg in caregivers %}
+                                                                <option value="{{ cg.id }}" {% if app.provider_id == cg.id %}selected{% endif %}>
+                                                                    {{ cg.full_name }}
+                                                                </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Admin / Dispatch Notes</label>
+                                                        <textarea name="notes" class="form-control" rows="2" placeholder="Optional internal or status update notes...">{{ app.cancellation_reason or '' }}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary fw-bold">Save Changes</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
