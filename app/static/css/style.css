@@ -4,10 +4,10 @@
    ========================================================================== */
 
 :root {
-    --primary-color: #0d9488;
-    --primary-hover: #0f766e;
-    --primary-light: #ccfbf1;
-    --primary-dark: #134e4a;
+    --primary-color: #1e3a8a;
+    --primary-hover: #172554;
+    --primary-light: #e0e7ff;
+    --primary-dark: #0f172a;
     
     --secondary-color: #0284c7;
     --secondary-hover: #0369a1;
@@ -54,7 +54,7 @@ body.high-contrast-mode {
     --slate-text: #111111;
     --border-color: #000000;
     --light-bg: #ffffff;
-    --primary-color: #006064;
+    --primary-color: #0a192f;
 }
 
 /* Global Elements */
@@ -121,7 +121,7 @@ a:hover {
 
 /* Emergency Banner */
 .emergency-banner {
-    background: linear-gradient(90deg, #0d9488 0%, #0284c7 100%);
+    background: linear-gradient(90deg, #1e3a8a 0%, #0284c7 100%);
     color: #ffffff;
     padding: 0.4rem 1rem;
     font-size: 0.9rem;
@@ -143,7 +143,7 @@ a:hover {
 .btn-primary:focus {
     background-color: var(--primary-hover);
     border-color: var(--primary-hover);
-    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.35);
 }
 
 .btn-outline-primary {
@@ -176,7 +176,7 @@ a:hover {
 
 /* Hero Section */
 .hero-section {
-    background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 100%);
+    background: linear-gradient(135deg, #eef2ff 0%, #e0f2fe 100%);
     padding: 5rem 1rem 4.5rem;
     border-bottom: 1px solid var(--border-color);
     position: relative;
@@ -385,7 +385,7 @@ a:hover {
 
 .form-control:focus, .form-select:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.15);
+    box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.15);
 }
 
 /* Time Slot Selector */

@@ -250,7 +250,7 @@ python -m pytest -v
 
 ### Senior-Friendly Accessibility
 - **Large Typography & Text Sizing:** Dedicated font size scale buttons (`Normal`, `Large`, `A+`) saved in browser `localStorage`.
-- **High-Contrast Healthcare Palette:** Deep teal (`#0d9488`), slate darks (`#0f172a`), and clear white cards ensuring compliance with contrast guidelines.
+- **High-Contrast Healthcare Palette:** Deep navy blue (`#1e3a8a`), slate darks (`#0f172a`), and clear white cards ensuring compliance with contrast guidelines.
 - **Simplified Booking:** Dynamic slot selection pills instead of ambiguous manual text inputs.
 - **24/7 Telephone Hotline:** Prominently featured emergency dispatch bar across all views.
 
